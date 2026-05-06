@@ -54,8 +54,21 @@
     .field-row { display: flex; gap: 20px; flex-wrap: wrap; }
     .field-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 160px; }
     .field-group label { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; }
-    .field-group input[type="text"], .field-group input[type="date"] { height: 38px; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0 12px; font-family: var(--font); font-size: 14px; color: var(--text); background: var(--surface); transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+    .field-group input[type="text"],
+    .field-group input[type="date"],
+    .field-group input[type="time"] { height: 38px; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0 12px; font-family: var(--font); font-size: 14px; color: var(--text); background: var(--surface); transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
     .field-group input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(29,111,164,0.12); background: var(--white); }
+    /* Meeting type radios */
+    .meeting-type-group { display: flex; gap: 18px; align-items: center; padding: 8px 0; flex-wrap: wrap; }
+    .meeting-type-opt { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+    .meeting-type-opt input[type="radio"] { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 50%; cursor: pointer; position: relative; transition: all 0.15s; background: var(--white); flex-shrink: 0; }
+    .meeting-type-opt input[type="radio"]:hover { border-color: var(--blue-lt); }
+    .meeting-type-opt input[type="radio"]:checked { border-color: var(--blue); background: var(--blue); }
+    .meeting-type-opt input[type="radio"]:checked::after { content: ''; position: absolute; left: 3px; top: 3px; width: 8px; height: 8px; border-radius: 50%; background: white; }
+    .meeting-type-opt span { font-size: 13px; color: var(--text); font-weight: 500; }
+    .meeting-type-group.type-error .meeting-type-opt input[type="radio"] { border-color: #c0392b; box-shadow: 0 0 0 2px rgba(192,57,43,0.15); }
+    .meeting-type-err { font-size: 11px; color: #c0392b; margin-top: 2px; }
+    .location-field-group { border-left: 2px solid var(--border); padding-left: 14px; margin-left: 2px; }
     .forms-table { width: 100%; border-collapse: collapse; }
     .forms-table th { background: var(--surface2); font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
     .forms-table th.center { text-align: center; }
@@ -160,14 +173,7 @@
     .preview-header { background: var(--navy); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
     .preview-header h2 { color: var(--white); font-size: 15px; font-weight: 600; }
     .preview-header-actions { display: flex; gap: 8px; }
-    .preview-body { padding: 28px 32px; overflow-y: auto; flex: 1; font-size: 14px; line-height: 1.7; color: var(--text); }
-    .preview-body h3 { font-size: 13px; font-weight: 700; color: var(--navy); margin: 20px 0 6px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
-    .preview-body p { margin-bottom: 12px; }
-    .preview-body a { color: var(--blue); }
-    .preview-body ol { margin: 8px 0 12px 20px; }
-    .preview-body ol li { margin-bottom: 6px; }
-    .preview-body ul { margin: 8px 0 12px 20px; list-style: disc; }
-    .preview-body ul li { margin-bottom: 4px; }
+    .preview-body { padding: 0; overflow-y: auto; flex: 1; background: #f4f8fc; }
     .preview-footer { background: var(--surface); border-top: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 12px; flex-wrap: wrap; }
     .preview-footer p { font-size: 12px; color: var(--text-muted); flex: 1; min-width: 200px; }
     .preview-footer .btn { flex-shrink: 0; }
@@ -223,15 +229,15 @@
 <div class="preview-overlay" id="welcome-modal" style="display:none">
   <div class="preview-modal">
     <div class="preview-header">
-      <h2>✉️ Welcome Email Preview</h2>
+      <h2>&#x2709;&#xFE0F; Welcome Email Preview</h2>
       <div class="preview-header-actions">
         <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="copyWelcomeEmail()">Copy Email</button>
-        <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="closeWelcomeModal()">✕ Close</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="closeWelcomeModal()">&#x2715; Close</button>
       </div>
     </div>
     <div class="preview-body" id="welcome-preview-body"></div>
     <div class="preview-footer">
-      <p id="copy-hint">Copy this email, then paste it into a new email to your customer.</p>
+      <p id="copy-hint">Copy this email, then paste directly into a new Outlook email &mdash; formatting is preserved.</p>
       <button class="btn btn-accent" onclick="openWelcomeMailto()">Open in Email Client</button>
     </div>
   </div>
@@ -239,7 +245,7 @@
 
 <div class="status-bar">
   <div class="status-item"><div class="status-dot"></div><span id="status-forms">0 of 5 forms reviewed</span></div>
-  <div class="status-item"><div class="status-dot" style="background:#3891c8"></div><span id="status-rows">0 sale rows</span></div>
+  <div class="status-item"><div class="status-dot"></div><span id="status-rows">0 sale rows</span></div>
 </div>
 
 <div class="page">
@@ -280,9 +286,30 @@
     </div>
     <div class="card-body">
       <div class="field-row">
-        <div class="field-group" style="max-width:220px">
+        <div class="field-group" style="max-width:200px">
           <label for="appt-date">New Customer Appt Date</label>
           <input type="date" id="appt-date" />
+        </div>
+        <div class="field-group" style="max-width:170px">
+          <label for="appt-time">Appt Time</label>
+          <input type="time" id="appt-time" />
+        </div>
+        <div class="field-group" style="min-width:240px">
+          <label>Meeting Type</label>
+          <div class="meeting-type-group" id="meeting-type-group">
+            <label class="meeting-type-opt"><input type="radio" name="meeting-type" value="Virtually" onchange="onMeetingTypeChange(this.value)" /><span>Virtually</span></label>
+            <label class="meeting-type-opt"><input type="radio" name="meeting-type" value="Phone" onchange="onMeetingTypeChange(this.value)" /><span>Phone</span></label>
+            <label class="meeting-type-opt"><input type="radio" name="meeting-type" value="In Person" onchange="onMeetingTypeChange(this.value)" /><span>In Person</span></label>
+          </div>
+          <span class="meeting-type-err" id="meeting-type-err" style="display:none">Please select a meeting type.</span>
+        </div>
+        <div class="field-group location-field-group" id="location-field-group" style="display:none;min-width:200px">
+          <label>Location</label>
+          <div class="meeting-type-group" id="location-group">
+            <label class="meeting-type-opt"><input type="radio" name="meeting-location" value="in West Linn" /><span>West Linn</span></label>
+            <label class="meeting-type-opt"><input type="radio" name="meeting-location" value="in Happy Valley" /><span>Happy Valley</span></label>
+          </div>
+          <span class="meeting-type-err" id="location-err" style="display:none">Please select a location.</span>
         </div>
       </div>
     </div>
@@ -344,9 +371,6 @@
   const SALE_TYPES = ['Auto','Fire','Health','Life'];
 
   // ── SOURCES CONFIG ───────────────────────────────────────────────────────
-  // Edit sources.json in your GitHub repo to add/remove source options.
-  // No code changes needed — just update the JSON array and push.
-
   let sourceOptions = [];
 
   async function loadSources() {
@@ -354,13 +378,11 @@
       const res = await fetch('sources.json?v=' + Date.now());
       if (!res.ok) throw new Error('HTTP ' + res.status);
       sourceOptions = await res.json();
-      console.log('Sources loaded:', sourceOptions.length, 'options');
     } catch(e) {
-      console.warn('Could not load sources.json, using inline fallback:', e);
       sourceOptions = [
         "Aged Lead Store","Agent Tagged Media","Contractors List","Direct Mail",
-        "Facebook","iLead","Referral - Current Customer","Referral - Realtor",
-        "Referral - Mortgage Broker","Self Generate","Statefarm.com",
+        "Facebook","iLead","Refer - Current Customer","Refer - Realtor",
+        "Refer - Mortgage Broker","Self Generate","Statefarm.com",
         "Win Back - Customer","Win Back - Letter","Agent Lists","Call In",
         "Current Customer","Events","Google","Pivot","School","State2State","Walk-in"
       ];
@@ -382,16 +404,11 @@
   function buildFormsTable() {
     const tbody = document.getElementById('forms-tbody');
     tbody.innerHTML = '';
-    // w:/ folder row — Applied checkbox only, at top
     const wfr = document.createElement('tr');
     wfr.innerHTML =
       '<td><span class="form-badge">w:/ folder</span></td>' +
       '<td><div class="check-wrap"><input type="checkbox" id="chk-wfolder-applied" /></div></td>' +
-      '<td></td>' +
-      '<td></td>' +
-      '<td></td>' +
-      '<td></td>' +
-      '<td></td>';
+      '<td></td><td></td><td></td><td></td><td></td>';
     tbody.appendChild(wfr);
 
     FORMS.forEach(form => {
@@ -406,8 +423,6 @@
         '<td><div class="check-wrap"><input type="checkbox" id="chk-' + form + '-na" /></div></td>';
       tbody.appendChild(tr);
     });
-
-
   }
 
   function buildSaleTypeCards() {
@@ -533,18 +548,36 @@
     document.getElementById('status-rows').textContent = totalRows + ' sale ' + (totalRows === 1 ? 'row' : 'rows');
   }
 
+  function onMeetingTypeChange(val) {
+    var lfg = document.getElementById('location-field-group');
+    if (val === 'In Person') {
+      lfg.style.display = '';
+    } else {
+      lfg.style.display = 'none';
+      document.querySelectorAll('input[name="meeting-location"]').forEach(function(r) { r.checked = false; });
+      document.getElementById('location-group').classList.remove('type-error');
+      document.getElementById('location-err').style.display = 'none';
+    }
+  }
 
   // ── VALIDATION & SUBMIT ───────────────────────────────────────────────────
   function clearErrors() {
     document.querySelectorAll('.field-error').forEach(function(el) { el.classList.remove('field-error'); });
     document.querySelectorAll('.field-error-label').forEach(function(el) { el.classList.remove('field-error-label'); });
     document.querySelectorAll('.count-error').forEach(function(el) { el.classList.remove('count-error'); });
-    // Reset any inline-styled error fields (checkboxes, source selects)
     document.querySelectorAll('[style*="c0392b"]').forEach(function(el) {
       el.style.borderColor = '';
       el.style.boxShadow   = '';
       el.style.background  = '';
     });
+    var mtg = document.getElementById('meeting-type-group');
+    if (mtg) mtg.classList.remove('type-error');
+    var mte = document.getElementById('meeting-type-err');
+    if (mte) mte.style.display = 'none';
+    var lg = document.getElementById('location-group');
+    if (lg) lg.classList.remove('type-error');
+    var le = document.getElementById('location-err');
+    if (le) le.style.display = 'none';
   }
 
   function markError(el) {
@@ -566,12 +599,34 @@
     if (!custName.value.trim())  { markError(custName);  valid = false; }
     if (!salesName.value.trim()) { markError(salesName); valid = false; }
 
-    // Appointment
+    // Appointment date
     var apptDate = document.getElementById('appt-date');
     if (!apptDate.value) { markError(apptDate); valid = false; }
 
-    // Forms Checklist — Applied OR N/A must be checked for each of the 4 forms
-    // If NOT N/A and NOT Submitted → Customer Notified, WFI Created, Notification Date are required
+    // Appointment time
+    var apptTime = document.getElementById('appt-time');
+    if (!apptTime.value) { markError(apptTime); valid = false; }
+
+    // Meeting type
+    var meetingTypeSelected = document.querySelector('input[name="meeting-type"]:checked');
+    var meetingTypeGroup = document.getElementById('meeting-type-group');
+    if (!meetingTypeSelected) {
+      meetingTypeGroup.classList.add('type-error');
+      document.getElementById('meeting-type-err').style.display = '';
+      valid = false;
+    }
+
+    // Location (required when In Person is selected)
+    if (meetingTypeSelected && meetingTypeSelected.value === 'In Person') {
+      var locationSelected = document.querySelector('input[name="meeting-location"]:checked');
+      if (!locationSelected) {
+        document.getElementById('location-group').classList.add('type-error');
+        document.getElementById('location-err').style.display = '';
+        valid = false;
+      }
+    }
+
+    // Forms Checklist
     FORMS.forEach(function(f) {
       var applied  = document.getElementById('chk-' + f + '-applied');
       var na       = document.getElementById('chk-' + f + '-na');
@@ -580,13 +635,11 @@
       var wfi      = document.getElementById('chk-' + f + '-wfi');
       var notifDate= document.getElementById('date-' + f + '-notif');
 
-      // Reset all styles for this form first
       [applied, na, sub, notif, wfi].forEach(function(el) {
         if (el) { el.style.borderColor = ''; el.style.boxShadow = ''; }
       });
       if (notifDate) { notifDate.classList.remove('field-error'); }
 
-      // Rule 1: Applied OR N/A required
       if (!applied.checked && !na.checked) {
         applied.style.borderColor = '#c0392b';
         applied.style.boxShadow   = '0 0 0 3px rgba(192,57,43,0.2)';
@@ -595,8 +648,6 @@
         valid = false;
       }
 
-      // Rule 2: If NOT N/A and Submitted is NOT checked →
-      //         Customer Notified, WFI Created, Notification Date all required
       if (!na.checked && !sub.checked) {
         if (!notif.checked) {
           notif.style.borderColor = '#c0392b';
@@ -615,7 +666,6 @@
       }
     });
 
-    // w:/ folder applied also required
     var wfolderApplied = document.getElementById('chk-wfolder-applied');
     if (wfolderApplied && !wfolderApplied.checked) {
       wfolderApplied.style.borderColor = '#c0392b';
@@ -626,7 +676,6 @@
       wfolderApplied.style.boxShadow   = '';
     }
 
-    // Sale Type Counts — at least one must be >= 1
     var totalSales = 0;
     SALE_TYPES.forEach(function(type) {
       totalSales += parseInt(document.getElementById('count-' + type).value) || 0;
@@ -641,11 +690,8 @@
       valid = false;
     }
 
-    // Sales Detail — validate each active row
     var detailContainer = document.getElementById('detail-table-container');
     detailContainer.querySelectorAll('tbody tr.row-enter').forEach(function(row) {
-
-      // Description
       var descEl = row.querySelector('input[data-key$="-desc"]');
       if (descEl) {
         var descVal = descEl.value.trim();
@@ -659,7 +705,6 @@
         }
       }
 
-      // Premium
       var premEl = row.querySelector('input[data-key$="-prem"]');
       if (premEl) {
         var premVal = premEl.value.trim();
@@ -673,7 +718,6 @@
         }
       }
 
-      // Source
       var srcEl = row.querySelector('select.source-select, input[data-key$="-src"]');
       if (srcEl) {
         var srcVal = srcEl.value ? srcEl.value.trim() : '';
@@ -687,7 +731,6 @@
         }
       }
 
-      // Teammate — required if Split Sale is checked
       var splitCb = row.querySelector('.split-checkbox');
       var tmEl    = row.querySelector('.teammate-input');
       if (splitCb && splitCb.checked && tmEl) {
@@ -704,13 +747,11 @@
     });
 
     if (!valid) {
-      // Scroll to first error
-      var first = document.querySelector('.field-error, .count-error');
+      var first = document.querySelector('.field-error, .count-error, .type-error');
       if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
-    // All good — show confirmation modal
     document.getElementById('submit-modal').style.display = 'flex';
   }
 
@@ -718,7 +759,40 @@
     document.getElementById('submit-modal').style.display = 'none';
   }
 
-  var _welcomePlainText = '';
+  // ── HELPERS ───────────────────────────────────────────────────────────────
+  function formatDate(isoDate) {
+    if (!isoDate) return '';
+    var p = isoDate.split('-');
+    var d = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function formatTime(t) {
+    if (!t) return '';
+    var p = t.split(':');
+    var h = parseInt(p[0], 10), m = p[1] || '00';
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return h + ':' + m + ' ' + ampm;
+  }
+
+  function htmlToOutlook(html) {
+    if (!html) return '';
+    var pS  = 'style="margin:0 0 12px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:13px;color:#403C3C;line-height:1.7;"';
+    var h3S = 'style="margin:24px 0 8px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:13px;font-weight:bold;color:#403C3C;text-transform:uppercase;letter-spacing:0.05em;"';
+    var liS = 'style="margin:0 0 6px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:13px;color:#403C3C;line-height:1.7;"';
+    return html
+      .replace(/<h3>/g, '<p ' + h3S + '><strong>')
+      .replace(/<\/h3>/g, '</strong></p>')
+      .replace(/<p>/g, '<p ' + pS + '>')
+      .replace(/<li>/g, '<li ' + liS + '>')
+      .replace(/<ul>/g, '<ul style="margin:8px 0 16px 20px;padding:0;">')
+      .replace(/<ol>/g, '<ol style="margin:8px 0 16px 20px;padding:0;">')
+      .replace(/(<a href="[^"]*")>/g, '$1 style="color:#D62311;text-decoration:none;">');
+  }
+
+  var _welcomePlainText  = '';
+  var _welcomeOutlookHtml = '';
 
   function buildConditionalSections() {
     var sections = { html: '', plain: '' };
@@ -733,26 +807,24 @@
       ].join('');
       sections.plain += '\nGood Student Discount (GSD)\n'
         + 'We\'re happy to inform you that the Good Student Discount (GSD) has been applied to your policy for drivers under age 25. To maintain this discount, all assigned drivers under 25 must meet certain academic qualifications, such as ranking in the top 20% of their class, earning a 3.0 GPA or higher on a 4.0 scale, making the Dean\'s List or Honor Roll, or achieving comparable academic standards.\n\n'
-        + 'For current full-time students, a recent scholastic record or a certified statement from a school official showing these achievements is required. Home study high school students must provide proof of scoring in the upper 20% on recognized standardized tests (e.g., PSAT, SAT, ACT). College graduates must provide a cumulative scholastic record demonstrating they meet similar academic criteria.\n\n'
-        + 'Please provide the appropriate certification or academic records to confirm eligibility and continue receiving this discount. If you have any questions or need assistance, we\'re here to help!\n'
+        + 'For current full-time students, a recent scholastic record or a certified statement from a school official showing these achievements is required.\n\n'
+        + 'Please provide the appropriate certification or academic records to confirm eligibility.\n'
         + '* Driver Training Discount details: https://www.statefarm.com/insurance/auto/car-insurance-for-teens\n';
     }
 
     if (document.getElementById('chk-SCD-applied') && document.getElementById('chk-SCD-applied').checked) {
       sections.html += [
-        '<h3>Steer Clear\u00ae Safe Driver Discount (SCD)</h3>',
-        '<p>We\'re pleased to let you know that the Steer Clear\u00ae Safe Driver discount (SCD) has been applied to your policy. This discount rewards eligible drivers under age 25 who complete the State Farm\u00ae Steer Clear program, which includes finishing 5 learning modules and completing 5 hours of driving over at least 10 trips.</p>',
+        '<h3>Steer Clear® Safe Driver Discount (SCD)</h3>',
+        '<p>We\'re pleased to let you know that the Steer Clear® Safe Driver discount (SCD) has been applied to your policy. This discount rewards eligible drivers under age 25 who complete the State Farm® Steer Clear program, which includes finishing 5 learning modules and completing 5 hours of driving over at least 10 trips.</p>',
         '<p>To qualify, all youthful drivers on your policy must have a valid driver\'s license and no at-fault accidents or moving violations in the past 3 years. This discount can provide up to 20% savings on your coverage for Bodily Injury and Property Damage, Comprehensive, and Collision.</p>',
         '<p>To help you complete the program, you can download the Steer Clear app by texting <strong>STEER to 42407</strong>. If you don\'t have a compatible device, materials are also available to view or print at statefarm.com.</p>',
         '<p>Please provide certification of program completion to maintain this discount. If you have any questions, we\'re here to help!</p>',
-        '<ul><li><a href="https://www.statefarm.com/insurance/auto/discounts/steer-clear">Steer Clear\u00ae program info</a></li></ul>'
+        '<ul><li><a href="https://www.statefarm.com/insurance/auto/discounts/steer-clear">Steer Clear® program info</a></li></ul>'
       ].join('');
-      sections.plain += '\nSteer Clear\u00ae Safe Driver Discount (SCD)\n'
-        + 'We\'re pleased to let you know that the Steer Clear\u00ae Safe Driver discount (SCD) has been applied to your policy. This discount rewards eligible drivers under age 25 who complete the State Farm\u00ae Steer Clear program, which includes finishing 5 learning modules and completing 5 hours of driving over at least 10 trips.\n\n'
-        + 'To qualify, all youthful drivers on your policy must have a valid driver\'s license and no at-fault accidents or moving violations in the past 3 years. This discount can provide up to 20% savings on your coverage for Bodily Injury and Property Damage, Comprehensive, and Collision.\n\n'
-        + 'To help you complete the program, you can download the Steer Clear app by texting STEER to 42407. If you don\'t have a compatible device, materials are also available to view or print at statefarm.com.\n\n'
-        + 'Please provide certification of program completion to maintain this discount. If you have any questions, we\'re here to help!\n'
-        + '* Steer Clear\u00ae program info: https://www.statefarm.com/insurance/auto/discounts/steer-clear\n';
+      sections.plain += '\nSteer Clear® Safe Driver Discount (SCD)\n'
+        + 'We\'re pleased to let you know that the Steer Clear® Safe Driver discount (SCD) has been applied to your policy.\n\n'
+        + 'Text STEER to 42407 to download the Steer Clear app.\n'
+        + '* Steer Clear® program info: https://www.statefarm.com/insurance/auto/discounts/steer-clear\n';
     }
 
     if (document.getElementById('chk-DTD-applied') && document.getElementById('chk-DTD-applied').checked) {
@@ -764,16 +836,15 @@
         '<ul><li><a href="https://www.statefarm.com/insurance/auto/car-insurance-for-teens">Driver Training Discount details</a></li></ul>'
       ].join('');
       sections.plain += '\nDriver Training Discount (DTD)\n'
-        + 'Thank you for choosing State Farm for your auto insurance. We noticed that the Driver Training Discount (DTD) has been applied to your policy. This discount rewards drivers under age 21 who have completed an approved driver education course taught by a licensed or certified instructor, including both classroom instruction and hands-on driving experience.\n\n'
-        + 'To confirm your eligibility and maintain this discount, please provide a certification or proof of completion from the course you took. This helps ensure you continue to receive the maximum discount of up to 8% on your coverage.\n\n'
-        + 'If you have any questions or need assistance, feel free to reach out. We appreciate your attention to this and look forward to supporting your safe driving journey!\n'
+        + 'The Driver Training Discount (DTD) has been applied to your policy for drivers under age 21 who completed an approved driver education course.\n\n'
+        + 'Please provide a certification or proof of completion to maintain this discount.\n'
         + '* Driver Training Discount details: https://www.statefarm.com/insurance/auto/car-insurance-for-teens\n';
     }
 
     if (document.getElementById('chk-DSS-applied') && document.getElementById('chk-DSS-applied').checked) {
       sections.html += [
-        '<h3>Drive Safe &amp; Save\u00ae (DSS)</h3>',
-        '<p>The Drive Safe &amp; Save\u00ae discount rewards safe driving habits by using a mobile app or a connected device to monitor your driving. To qualify and maintain this discount, you\'ll need to:</p>',
+        '<h3>Drive Safe &amp; Save® (DSS)</h3>',
+        '<p>The Drive Safe &amp; Save® discount rewards safe driving habits by using a mobile app or a connected device to monitor your driving. To qualify and maintain this discount, you\'ll need to:</p>',
         '<ol>',
         '<li>Enroll in the program through the <a href="https://www.statefarm.com/insurance/auto/discounts/drive-safe-save">State Farm app or website</a>.</li>',
         '<li>Allow the app or device to track your driving behaviors, including speed, braking, and time of driving.</li>',
@@ -781,12 +852,11 @@
         '<li>Continue practicing safe driving habits to maintain and potentially increase your savings over time.</li>',
         '</ol>'
       ].join('');
-      sections.plain += '\nDrive Safe & Save\u00ae (DSS)\n'
-        + 'The Drive Safe & Save\u00ae discount rewards safe driving habits by using a mobile app or a connected device to monitor your driving. To qualify and maintain this discount, you\'ll need to:\n\n'
-        + '1. Enroll in the program through the State Farm app or website: https://www.statefarm.com/insurance/auto/discounts/drive-safe-save\n'
-        + '2. Allow the app or device to track your driving behaviors, including speed, braking, and time of driving.\n'
-        + '3. Drive safely over a trial period (usually a few months) to earn your discount.\n'
-        + '4. Continue practicing safe driving habits to maintain and potentially increase your savings over time.\n';
+      sections.plain += '\nDrive Safe & Save® (DSS)\n'
+        + 'The Drive Safe & Save® discount monitors your driving to reward safe habits.\n\n'
+        + '1. Enroll: https://www.statefarm.com/insurance/auto/discounts/drive-safe-save\n'
+        + '2. Allow the app to track speed, braking, and time of driving.\n'
+        + '3. Drive safely over the trial period to earn your discount.\n';
     }
 
     return sections;
@@ -795,61 +865,146 @@
   function confirmSubmit() {
     closeModal();
 
+    var custName  = document.getElementById('cust-name').value || '';
+    var salesName = document.getElementById('sales-name').value || '';
+    var subDate   = document.getElementById('sub-date').value || '';
+    var apptDateRaw  = document.getElementById('appt-date').value || '';
+    var apptTimeRaw  = document.getElementById('appt-time').value || '';
+    var meetingTypeCb = document.querySelector('input[name="meeting-type"]:checked');
+    var meetingType  = meetingTypeCb ? meetingTypeCb.value : '';
+    var locationCb   = document.querySelector('input[name="meeting-location"]:checked');
+    var locationSuffix = (meetingType === 'In Person' && locationCb) ? ' ' + locationCb.value : '';
+    var apptDateFmt  = formatDate(apptDateRaw);
+    var apptTimeFmt  = formatTime(apptTimeRaw);
+    var apptLine     = apptDateFmt + ' at ' + apptTimeFmt + ' — ' + meetingType + locationSuffix;
+
+    // Internal submission email
     var subject1 = encodeURIComponent('New Business App');
     var body1 = encodeURIComponent(
       'Please find the attached Sales Submission Checklist PDF.\n\n'
-      + 'Customer: ' + (document.getElementById('cust-name').value || '') + '\n'
-      + 'Sales Person: ' + (document.getElementById('sales-name').value || '') + '\n'
-      + 'Date: ' + (document.getElementById('sub-date').value || '') + '\n\n'
+      + 'Customer: ' + custName + '\n'
+      + 'Sales Person: ' + salesName + '\n'
+      + 'Date: ' + subDate + '\n\n'
       + 'To attach the PDF: use the Print dialog that will open, save as PDF, then attach to this email.'
     );
     window.open('mailto:russel.williams.k0wt@statefarm.com?subject=' + subject1 + '&body=' + body1);
 
-    var apptDate = document.getElementById('appt-date').value || '[DATE]';
     var sections = buildConditionalSections();
+    var outlookSections = htmlToOutlook(sections.html);
 
-    var htmlBody = [
-      '<p>Hello and welcome to <strong>Russel Williams State Farm!</strong></p>',
-      '<p>We\'re excited to have you as part of our State Farm family. Our team is here to support you every step of the way with your insurance needs and provide you with helpful resources.</p>',
-      '<p>You should have a copy of your ID cards in your inbox and in your online portal.</p>',
-      '<p>We look forward to seeing you on: <strong>' + apptDate + ' &lt;TIME&gt; &lt;Method&gt;</strong> (i.e. 4/1/2026 at 1:30pm Virtually)</p>',
-      sections.html,
-      '<p>Don\'t hesitate to contact us if you have any questions, we\'re here to help!</p>',
-      '<p><strong>Contact Us: Russel Williams State Farm</strong> &nbsp; Phone: <a href="tel:5036576690">(503) 657-6690</a><br>',
-      '6105 West A St, Ste C, West Linn, OR 97068 &nbsp; Office Hours: Monday\u2013Friday, 9 AM \u2013 5:30 PM</p>',
-      '<p><strong>Additional Location:</strong><br>',
-      '13255 Se 130th Ave Ste 300, Happy Valley, OR 97015<br>',
-      'Phone: <a href="tel:9712526298">(971) 252-6298</a></p>',
-      '<p><strong>Helpful Online Resources:</strong></p>',
-      '<ul>',
-      '<li>Manage your policy: <a href="https://www.statefarm.com">statefarm.com</a></li>',
-      '<li>File a claim: <a href="https://www.statefarm.com/claims">statefarm.com/claims</a></li>',
-      '<li>Pay your bill: <a href="https://www.statefarm.com/billing">statefarm.com/billing</a></li>',
-      '</ul>',
-      '<p><strong>Important:</strong> If you have monthly payments, please be sure to sign and return your email payment authorization form as soon as possible. This will ensure your payments are processed smoothly and on time.</p>',
-      '<p>Thank you again for trusting Russel Williams State Farm. We look forward to serving you!</p>',
-      '<p>Best regards,<br><strong>Russel Williams State Farm Team</strong></p>'
+    // ── BUILD OUTLOOK-COMPATIBLE EMAIL ───────────────────────────────────────
+    // logo removed
+    var P  = 'style="margin:0 0 14px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:14px;color:#403C3C;line-height:1.7;"';
+    var emailBodyHtml = [
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F5F5F5;">',
+      '<tr><td align="center" style="padding:20px 12px;">',
+
+      // ── Container ──
+      '<table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border:1px solid #DCDCDC;">',
+
+      // Header — SF Red, agent name
+      '<tr>',
+      '<td bgcolor="#D62311" style="background-color:#D62311;padding:20px 32px;">',
+      '<p style="margin:0;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:18px;font-weight:bold;color:#ffffff;line-height:1.2;">Russel Williams State Farm</p>',
+      '</td></tr>',
+
+      // Body
+      '<tr><td style="padding:32px 32px 24px;">',
+
+      '<p style="margin:0 0 14px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:15px;color:#403C3C;line-height:1.6;">Hello and welcome to <strong>Russel Williams State Farm!</strong></p>',
+      '<p ' + P + '>We\'re excited to have you as part of our State Farm family. Our team is here to support you every step of the way with your insurance needs and provide you with helpful resources.</p>',
+      '<p ' + P + '>You should have a copy of your ID cards in your inbox and in your online portal.</p>',
+
+      // Appointment highlight box — SF Red accent
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">',
+      '<tr><td bgcolor="#FDE9E7" style="background-color:#FDE9E7;border-left:4px solid #D62311;padding:16px 20px;">',
+      '<p style="margin:0 0 5px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:11px;font-weight:bold;color:#D62311;text-transform:uppercase;letter-spacing:0.08em;">YOUR NEXT APPOINTMENT</p>',
+      '<p style="margin:0;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#403C3C;line-height:1.4;">' + apptLine + '</p>',
+      '</td></tr></table>',
+
+      // Conditional discount sections
+      outlookSections,
+
+      // Divider
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 20px;"><tr><td style="border-top:1px solid #DCDCDC;height:1px;font-size:1px;line-height:1px;">&nbsp;</td></tr></table>',
+
+      // Important box
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">',
+      '<tr><td bgcolor="#fff8e6" style="background-color:#fff8e6;border-left:4px solid #e8a020;padding:14px 18px;">',
+      '<p style="margin:0 0 4px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:11px;font-weight:bold;color:#856404;text-transform:uppercase;letter-spacing:0.08em;">Important</p>',
+      '<p style="margin:0;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:13px;color:#403C3C;line-height:1.6;">If you have monthly payments, please be sure to sign and return your email payment authorization form as soon as possible. This will ensure your payments are processed smoothly and on time.</p>',
+      '</td></tr></table>',
+
+      // Resources
+      '<p style="margin:0 0 8px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:#403C3C;">Helpful Online Resources:</p>',
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">',
+      '<tr><td style="padding:3px 0;"><a href="https://www.statefarm.com" style="font-family:Arial,Calibri,Helvetica,sans-serif;font-size:13px;color:#D62311;text-decoration:none;">&#8250; Manage your policy: statefarm.com</a></td></tr>',
+      '<tr><td style="padding:3px 0;"><a href="https://www.statefarm.com/claims" style="font-family:Arial,Calibri,Helvetica,sans-serif;font-size:13px;color:#D62311;text-decoration:none;">&#8250; File a claim: statefarm.com/claims</a></td></tr>',
+      '<tr><td style="padding:3px 0;"><a href="https://www.statefarm.com/billing" style="font-family:Arial,Calibri,Helvetica,sans-serif;font-size:13px;color:#D62311;text-decoration:none;">&#8250; Pay your bill: statefarm.com/billing</a></td></tr>',
+      '</table>',
+
+      '<p ' + P + '>Don\'t hesitate to contact us if you have any questions &#8212; we\'re here to help!</p>',
+      '<p style="margin:0 0 24px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:14px;color:#403C3C;line-height:1.7;">Thank you again for trusting Russel Williams State Farm. We look forward to serving you!</p>',
+
+      // Signature
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px;"><tr><td style="border-top:1px solid #DCDCDC;height:1px;font-size:1px;line-height:1px;">&nbsp;</td></tr></table>',
+      '<p style="margin:14px 0 2px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:13px;color:#403C3C;">Best regards,</p>',
+      '<p style="margin:0;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:14px;font-weight:bold;color:#403C3C;">Russel Williams State Farm Team</p>',
+
+      '</td></tr>',
+
+      // Footer — charcoal
+      '<tr>',
+      '<td bgcolor="#403C3C" style="background-color:#403C3C;padding:24px 32px;">',
+      '<table width="100%" cellpadding="0" cellspacing="0" border="0">',
+      '<tr><td style="padding-bottom:16px;">',
+      '<p style="margin:0 0 4px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:11px;font-weight:bold;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;">West Linn Office</p>',
+      '<p style="margin:0;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:12px;color:rgba(255,255,255,0.72);line-height:1.7;">6105 West A St, Ste C, West Linn, OR 97068<br><a href="tel:5036576690" style="color:rgba(255,255,255,0.9);text-decoration:none;">(503) 657-6690</a> &nbsp;&bull;&nbsp; Mon&ndash;Fri, 9 AM &ndash; 5:30 PM</p>',
+      '</td></tr>',
+      '<tr><td style="border-top:1px solid rgba(255,255,255,0.15);padding-top:16px;">',
+      '<p style="margin:0 0 4px;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:11px;font-weight:bold;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;">Happy Valley Office</p>',
+      '<p style="margin:0;font-family:Arial,Calibri,Helvetica,sans-serif;font-size:12px;color:rgba(255,255,255,0.72);line-height:1.7;">13255 SE 130th Ave Ste 300, Happy Valley, OR 97015<br><a href="tel:9712526298" style="color:rgba(255,255,255,0.9);text-decoration:none;">(971) 252-6298</a></p>',
+      '</td></tr>',
+      '</table>',
+      '</td></tr>',
+
+      '</table>',   // end container
+      '</td></tr>',
+      '</table>'    // end wrapper
     ].join('');
+
+    _welcomeOutlookHtml = [
+      '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+      '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">',
+      '<head>',
+      '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />',
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0"/>',
+      '<!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->',
+      '<style type="text/css">a{color:#D62311;text-decoration:none;}a:hover{text-decoration:underline;}</style>',
+      '</head>',
+      '<body style="margin:0;padding:0;background-color:#f4f8fc;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">',
+      emailBodyHtml,
+      '</body>',
+      '</html>'
+    ].join('\n');
 
     _welcomePlainText = 'Hello and welcome to Russel Williams State Farm!\n\n'
       + 'We\'re excited to have you as part of our State Farm family. Our team is here to support you every step of the way with your insurance needs and provide you with helpful resources.\n\n'
       + 'You should have a copy of your ID cards in your inbox and in your online portal.\n\n'
-      + 'We look forward to seeing you on: ' + apptDate + ' <TIME> <Method> (i.e. 4/1/2026 at 1:30pm Virtually)\n'
+      + 'YOUR NEXT APPOINTMENT: ' + apptLine + '\n'
       + sections.plain
-      + '\nDon\'t hesitate to contact us if you have any questions, we\'re here to help!\n\n'
-      + 'Contact Us: Russel Williams State Farm  Phone: (503) 657-6690\n'
-      + '6105 West A St, Ste C, West Linn, OR 97068  Office Hours: Monday-Friday, 9 AM - 5:30 PM\n\n'
-      + 'Additional Location:\n13255 Se 130th Ave Ste 300, Happy Valley, OR 97015\nPhone: (971) 252-6298\n\n'
+      + '\nIMPORTANT: If you have monthly payments, please be sure to sign and return your email payment authorization form as soon as possible.\n\n'
       + 'Helpful Online Resources:\n'
       + '* Manage your policy: https://www.statefarm.com\n'
       + '* File a claim: https://www.statefarm.com/claims\n'
       + '* Pay your bill: https://www.statefarm.com/billing\n\n'
-      + 'Important: If you have monthly payments, please be sure to sign and return your email payment authorization form as soon as possible.\n\n'
+      + 'Don\'t hesitate to contact us if you have any questions - we\'re here to help!\n\n'
       + 'Thank you again for trusting Russel Williams State Farm. We look forward to serving you!\n\n'
-      + 'Best regards,\nRussel Williams State Farm Team';
+      + 'Best regards,\nRussel Williams State Farm Team\n\n'
+      + 'West Linn: 6105 West A St Ste C, West Linn OR 97068 | (503) 657-6690 | Mon-Fri 9AM-5:30PM\n'
+      + 'Happy Valley: 13255 SE 130th Ave Ste 300, Happy Valley OR 97015 | (971) 252-6298';
 
-    document.getElementById('welcome-preview-body').innerHTML = htmlBody;
-    // Print the checklist first, then show welcome email preview after print dialog closes
+    document.getElementById('welcome-preview-body').innerHTML = emailBodyHtml;
     window.print();
     setTimeout(function() {
       document.getElementById('welcome-modal').style.display = 'flex';
@@ -862,21 +1017,20 @@
 
   function openWelcomeMailto() {
     var subject = encodeURIComponent('Welcome to Russel Williams State Farm!');
-    window.open('mailto:?subject=' + subject + '&body=' + encodeURIComponent(_welcomePlainText));
+    window.open('mailto:?subject=' + subject);
   }
 
   function copyWelcomeEmail() {
-    var body = document.getElementById('welcome-preview-body');
     if (navigator.clipboard && window.ClipboardItem) {
-      var blob = new Blob([body.innerHTML], { type: 'text/html' });
-      var blobPlain = new Blob([body.innerText], { type: 'text/plain' });
+      var blob = new Blob([_welcomeOutlookHtml], { type: 'text/html' });
+      var blobPlain = new Blob([_welcomePlainText], { type: 'text/plain' });
       navigator.clipboard.write([new ClipboardItem({ 'text/html': blob, 'text/plain': blobPlain })])
         .then(function() {
           var hint = document.getElementById('copy-hint');
-          hint.textContent = '\u2713 Copied! Paste into your email client to preserve formatting.';
+          hint.textContent = '✓ Copied! Paste directly into a new Outlook email — formatting is preserved.';
           hint.classList.add('copy-success');
           setTimeout(function() {
-            hint.textContent = 'Copy this email, then paste it into a new email to your customer.';
+            hint.textContent = 'Copy this email, then paste directly into a new Outlook email — formatting is preserved.';
             hint.classList.remove('copy-success');
           }, 3000);
         })
@@ -890,7 +1044,6 @@
     if (e.target && e.target.id === 'welcome-modal') closeWelcomeModal();
   });
 
-  // Close modal on overlay click
   document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'submit-modal') closeModal();
   });
@@ -901,6 +1054,14 @@
     document.getElementById('cust-name').value = '';
     document.getElementById('sales-name').value = '';
     document.getElementById('appt-date').value = '';
+    document.getElementById('appt-time').value = '';
+    document.querySelectorAll('input[name="meeting-type"]').forEach(function(r) { r.checked = false; });
+    document.getElementById('meeting-type-group').classList.remove('type-error');
+    document.getElementById('meeting-type-err').style.display = 'none';
+    document.querySelectorAll('input[name="meeting-location"]').forEach(function(r) { r.checked = false; });
+    document.getElementById('location-field-group').style.display = 'none';
+    document.getElementById('location-group').classList.remove('type-error');
+    document.getElementById('location-err').style.display = 'none';
     FORMS.forEach(function(f) {
       document.getElementById('chk-' + f + '-applied').checked = false;
       document.getElementById('chk-' + f + '-sub').checked = false;
